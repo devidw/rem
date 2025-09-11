@@ -94,3 +94,51 @@ export const createCheckpoint = async (editor: any) => {
     alert("Failed to create checkpoint")
   }
 }
+
+// Function to get list of available checkpoints
+export const getCheckpoints = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/api/checkpoints")
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.checkpoints
+  } catch (error) {
+    console.error("Failed to get checkpoints:", error)
+    return []
+  }
+}
+
+// Function to restore from a checkpoint (DEPRECATED - use RestoreComponent instead)
+// This function is kept for backward compatibility but should not be used
+// Use the RestoreComponent which properly updates the in-memory store
+export const restoreFromCheckpoint = async (backupFolder: string) => {
+  console.warn(
+    "restoreFromCheckpoint is deprecated. Use RestoreComponent instead."
+  )
+  try {
+    const response = await fetch(
+      `http://localhost:3001/api/restore/${backupFolder}`,
+      {
+        method: "POST",
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+
+    // Reload the page to apply the restored snapshot
+    window.location.reload()
+
+    console.log("Restored from checkpoint:", result.message)
+  } catch (error) {
+    console.error("Failed to restore from checkpoint:", error)
+    alert("Failed to restore from checkpoint")
+  }
+}

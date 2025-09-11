@@ -1,13 +1,42 @@
-import { Tldraw } from "tldraw"
+import { Tldraw, useEditor } from "tldraw"
 import "tldraw/tldraw.css"
 import { PageLinkShapeUtil } from "./page-link/PageLinkShapeUtil.tsx"
 import { components, uiOverrides } from "./ui-overrides.tsx"
 import { PageLinkShapeTool } from "./page-link/PageLinkShapeTool.tsx"
 import { Nav } from "./nav.tsx"
 import { PersistenceManager } from "./PersistenceManager.tsx"
+import { CommandPalette } from "./CommandPalette.tsx"
+import { useState, useEffect } from "react"
 
 const customShapes = [PageLinkShapeUtil]
 const customTools = [PageLinkShapeTool]
+
+function AppContent() {
+  const editor = useEditor()
+  const [pages, setPages] = useState(() => editor.getPages())
+
+  useEffect(() => {
+    const handleStoreChange = () => {
+      const newPages = editor.getPages()
+      setPages(newPages)
+    }
+
+    const unsubscribe = editor.store.listen(handleStoreChange, {
+      source: "user",
+      scope: "all",
+    })
+
+    return () => unsubscribe()
+  }, [editor])
+
+  return (
+    <>
+      <PersistenceManager />
+      <Nav />
+      <CommandPalette editor={editor} pages={pages} />
+    </>
+  )
+}
 
 export default function App() {
   return (
@@ -73,8 +102,7 @@ export default function App() {
             })
           }}
         >
-          <PersistenceManager />
-          <Nav />
+          <AppContent />
         </Tldraw>
       </div>
     </>

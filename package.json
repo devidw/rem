@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "vite",
+    "dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "-dev:client": "vite",
+    "dev:client": "vite --port=7777",
     "dev:server": "node server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
