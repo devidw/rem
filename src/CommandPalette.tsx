@@ -1,5 +1,7 @@
 import { Editor, type TLPage } from "tldraw"
 import { useState, useEffect, useRef, useMemo } from "react"
+import { useStore } from "@nanostores/react"
+import { keyboardModeStore, setKeyboardMode } from "./stores"
 
 type MyPage = TLPage & {
   my: {
@@ -26,25 +28,6 @@ function getMyPageSingle(page: TLPage): MyPage {
       parentPath,
     },
   }
-}
-
-/**
- * Fuzzy search implementation
- */
-function fuzzySearch(query: string, text: string): boolean {
-  if (!query) return true
-
-  const queryLower = query.toLowerCase()
-  const textLower = text.toLowerCase()
-
-  let queryIndex = 0
-  for (let i = 0; i < textLower.length && queryIndex < queryLower.length; i++) {
-    if (textLower[i] === queryLower[queryIndex]) {
-      queryIndex++
-    }
-  }
-
-  return queryIndex === queryLower.length
 }
 
 /**
@@ -91,6 +74,7 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const paletteRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const keyboardMode = useStore(keyboardModeStore)
 
   // Convert pages to MyPage format
   const myPages = useMemo(
@@ -124,12 +108,13 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Cmd+K or Ctrl+K to open palette
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+      // Space to open palette (when in keyboard mode and not typing in an input)
+      if (event.key === " " && event.target === document.body && keyboardMode) {
         event.preventDefault()
         setIsOpen(true)
         setQuery("")
         setSelectedIndex(0)
+        setKeyboardMode(false) // Close keyboard mode after opening search
         return
       }
 
@@ -166,7 +151,7 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
 
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, filteredPages, selectedIndex, editor])
+  }, [isOpen, filteredPages, selectedIndex, editor, keyboardMode])
 
   // Focus input when palette opens
   useEffect(() => {
@@ -234,7 +219,9 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
               return (
                 <div
                   key={page.id}
-                  ref={(el) => (itemRefs.current[index] = el)}
+                  ref={(el) => {
+                    itemRefs.current[index] = el
+                  }}
                   className={`px-4 py-2 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
                     index === selectedIndex
                       ? "bg-blue-50 dark:bg-blue-900/20"
