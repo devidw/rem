@@ -105,27 +105,40 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
     return scored.map((item) => item.page)
   }, [myPages, query])
 
-  // Handle keyboard shortcuts
+  // Handle keyboard shortcuts and custom events
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Space to open palette (when in keyboard mode and not typing in an input)
-      if (event.key === " " && event.target === document.body && keyboardMode) {
+      // If palette is open, intercept Escape immediately and stop other listeners
+      if (isOpen && event.key === "Escape") {
         event.preventDefault()
+        // Prevent other keydown listeners (e.g., Controls) on the same target
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation()
+        } else {
+          event.stopPropagation()
+        }
+        setIsOpen(false)
+        setQuery("")
+        // Reactivate keyboard mode when closing palette with Escape
+        setKeyboardMode(true)
+        return
+      }
+
+      // Space to open palette (when not typing in an input)
+      if (event.key === " " && event.target === document.body && !isOpen) {
+        event.preventDefault()
+        event.stopPropagation()
         setIsOpen(true)
         setQuery("")
         setSelectedIndex(0)
-        setKeyboardMode(false) // Close keyboard mode after opening search
+        // Deactivate keyboard mode when opening search for user input
+        setKeyboardMode(false)
         return
       }
 
       if (!isOpen) return
 
       switch (event.key) {
-        case "Escape":
-          event.preventDefault()
-          setIsOpen(false)
-          setQuery("")
-          break
         case "ArrowDown":
           event.preventDefault()
           setSelectedIndex((prev) =>
@@ -149,8 +162,31 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
       }
     }
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
+    const handleCustomEvent = () => {
+      if (!isOpen) {
+        setIsOpen(true)
+        setQuery("")
+        setSelectedIndex(0)
+        // Deactivate keyboard mode when opening search for user input
+        setKeyboardMode(false)
+      }
+    }
+
+    // Use capture so this handler runs before bubble-phase listeners in other components
+    document.addEventListener("keydown", handleKeyDown, { capture: true })
+    document.addEventListener(
+      "openCommandPalette",
+      handleCustomEvent as EventListener
+    )
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, {
+        capture: true,
+      } as any)
+      document.removeEventListener(
+        "openCommandPalette",
+        handleCustomEvent as EventListener
+      )
+    }
   }, [isOpen, filteredPages, selectedIndex, editor, keyboardMode])
 
   // Focus input when palette opens

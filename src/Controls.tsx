@@ -94,6 +94,20 @@ export function Controls({ editor, currentPage, allPages }: ControlsProps) {
           allPages={allPages}
           showKeyboardHint={keyboardMode}
         />
+        <button
+          onClick={() => {
+            // Dispatch custom event to trigger CommandPalette
+            const searchEvent = new CustomEvent("openCommandPalette", {
+              bubbles: true,
+              detail: { fromKeyboardMode: keyboardMode },
+            })
+            document.dispatchEvent(searchEvent)
+          }}
+          className="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded cursor-pointer"
+          title={keyboardMode ? "Search (Space)" : "Search"}
+        >
+          {keyboardMode ? "⎵" : "🔍"}
+        </button>
       </div>
 
       {/* Secondary controls - only on root page */}
