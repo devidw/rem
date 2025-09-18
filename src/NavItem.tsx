@@ -17,7 +17,7 @@ export function NavItem({
   childCount = 0,
 }: NavItemProps) {
   const theClassName = `
-  ${page.id === currentPage.id ? "underline" : ""}
+  ${page.id === currentPage.id ? "underline underline-offset-2" : ""}
   border-b-2 border-dotted ${
     isSelected ? "border-blue-500" : "border-transparent"
   }
@@ -35,13 +35,7 @@ export function NavItem({
         <div className="flex justify-between items-center">
           <span>{page.my.name}</span>
           <div className="flex items-center min-w-0 pl-8">
-            <span
-              className={`text-xs ${
-                isSelected ? "text-blue-400" : "text-gray-500"
-              }`}
-            >
-              {childCount}
-            </span>
+            <span>{childCount}</span>
           </div>
         </div>
       </div>

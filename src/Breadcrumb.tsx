@@ -12,9 +12,9 @@ export function Breadcrumb({ editor, currentPage, allPages }: BreadcrumbProps) {
   const breadcrumbItems = []
 
   if (currentPage.name === "/") {
-    // Root page - just show "root"
+    // Root page - just show "/"
     breadcrumbItems.push({
-      label: "root",
+      label: "/",
       path: "/",
       isLast: true,
     })
@@ -24,7 +24,7 @@ export function Breadcrumb({ editor, currentPage, allPages }: BreadcrumbProps) {
 
     // Add root link first
     breadcrumbItems.push({
-      label: "root",
+      label: "/",
       path: "/",
       isLast: false,
     })
@@ -49,13 +49,13 @@ export function Breadcrumb({ editor, currentPage, allPages }: BreadcrumbProps) {
 
         return (
           <span key={item.path} className="flex items-center">
-            {index > 0 && <span className="mx-1">&rarr;</span>}
+            {index > 1 && <span className="mx-1">/</span>}
             <span
               className={`${
                 isClickable
-                  ? "cursor-pointer hover:underline"
+                  ? "cursor-pointer hover:underline hover:underline-offset-2"
                   : item.isLast
-                  ? "font-bold underline"
+                  ? "font-bold underline underline-offset-2"
                   : "opacity-50"
               }`}
               onClick={() => {

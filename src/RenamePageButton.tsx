@@ -99,10 +99,10 @@ export const RenamePageButton = forwardRef<
     <button
       ref={ref}
       onClick={handleRename}
-      className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded cursor-pointer"
+      className="w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
       title="Rename/move this page and update all child pages (R)"
     >
-      {showKeyboardHint ? "R" : "✏️"}
+      R
     </button>
   )
 })

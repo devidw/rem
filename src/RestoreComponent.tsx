@@ -12,13 +12,22 @@ interface RestoreComponentProps {
   className?: string
   title?: string
   children?: React.ReactNode
+  showLabel?: boolean
 }
 
 export function RestoreComponent({
-  className = "px-2 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded cursor-pointer",
+  className: providedClassName,
   title = "Restore from backup",
-  children = "↩️",
+  children: providedChildren,
+  showLabel = false,
 }: RestoreComponentProps) {
+  const defaultClassName = showLabel
+    ? "px-2 py-1 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
+    : "w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
+  const defaultChildren = showLabel ? "Restore" : "&lt;-"
+
+  const className = providedClassName || defaultClassName
+  const children = providedChildren || defaultChildren
   const editor = useEditor()
   const [isLoading, setIsLoading] = useState(false)
 

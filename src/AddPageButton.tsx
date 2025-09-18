@@ -41,10 +41,10 @@ export const AddPageButton = forwardRef<HTMLButtonElement, AddPageButtonProps>(
       <button
         ref={ref}
         onClick={handleAdd}
-        className="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded cursor-pointer"
+        className="w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
         title="Add new page (C)"
       >
-        {showKeyboardHint ? "C" : "➕"}
+        C
       </button>
     )
   }

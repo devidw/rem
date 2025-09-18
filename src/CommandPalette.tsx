@@ -108,6 +108,16 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
   // Handle keyboard shortcuts and custom events
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Debug logging for Ctrl+P
+      if (event.key === "p" && event.ctrlKey) {
+        console.log("Ctrl+P detected:", {
+          target: event.target,
+          isOpen,
+          keyboardMode,
+          eventPhase: event.eventPhase,
+        })
+      }
+
       // If palette is open, intercept Escape immediately and stop other listeners
       if (isOpen && event.key === "Escape") {
         event.preventDefault()
@@ -124,10 +134,18 @@ export function CommandPalette({ editor, pages }: CommandPaletteProps) {
         return
       }
 
-      // Space to open palette (when not typing in an input)
-      if (event.key === " " && event.target === document.body && !isOpen) {
+      // Ctrl+P to open palette - use more aggressive prevention
+      if (event.key === "p" && (event.ctrlKey || event.metaKey) && !isOpen) {
+        console.log("Opening CommandPalette with Ctrl+P")
         event.preventDefault()
+        event.stopImmediatePropagation()
         event.stopPropagation()
+
+        // Additional prevention for browser shortcuts
+        if (event.cancelable) {
+          event.preventDefault()
+        }
+
         setIsOpen(true)
         setQuery("")
         setSelectedIndex(0)

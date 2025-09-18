@@ -1,5 +1,5 @@
 import { Editor } from "tldraw"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useStore } from "@nanostores/react"
 import { RestoreComponent } from "./RestoreComponent"
 import { AddPageButton } from "./AddPageButton"
@@ -22,6 +22,7 @@ interface ControlsProps {
 
 export function Controls({ editor, currentPage, allPages }: ControlsProps) {
   const keyboardMode = useStore(keyboardModeStore)
+  const [secondaryExpanded, setSecondaryExpanded] = useState(false)
   const addPageRef = useRef<HTMLButtonElement>(null)
   const renamePageRef = useRef<HTMLButtonElement>(null)
   const deletePageRef = useRef<HTMLButtonElement>(null)
@@ -103,21 +104,40 @@ export function Controls({ editor, currentPage, allPages }: ControlsProps) {
             })
             document.dispatchEvent(searchEvent)
           }}
-          className="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded cursor-pointer"
+          className="w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
           title={keyboardMode ? "Search (Space)" : "Search"}
         >
-          {keyboardMode ? "⎵" : "🔍"}
+          ⎵
         </button>
-      </div>
 
-      {/* Secondary controls - only on root page */}
-      {isRootPage && (
-        <div className="flex items-center space-x-2">
-          <CheckpointButton editor={editor} />
-          <RestoreComponent />
-          <ReexportAssetsButton editor={editor} />
-        </div>
-      )}
+        {/* Secondary controls inline - only on root page */}
+        {isRootPage && (
+          <>
+            {!secondaryExpanded ? (
+              <button
+                onClick={() => setSecondaryExpanded(true)}
+                className="w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
+                title="Show more options"
+              >
+                ...
+              </button>
+            ) : (
+              <>
+                <CheckpointButton editor={editor} showLabel={true} />
+                <RestoreComponent showLabel={true} />
+                <ReexportAssetsButton editor={editor} showLabel={true} />
+                <button
+                  onClick={() => setSecondaryExpanded(false)}
+                  className="w-6 h-6 flex items-center justify-center text-gray-800 text-xs border border-gray-400 cursor-pointer font-mono"
+                  title="Hide options"
+                >
+                  ^
+                </button>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }

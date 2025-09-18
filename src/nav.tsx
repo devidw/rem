@@ -5,7 +5,7 @@ import { Controls } from "./Controls"
 import { Breadcrumb } from "./Breadcrumb"
 import { NavItem } from "./NavItem"
 import { getMyPageSingle, getMyPages } from "./nav-types"
-import { keyboardModeStore, setKeyboardMode } from "./stores"
+import { keyboardModeStore } from "./stores"
 
 export function Nav() {
   const editor = useEditor()
@@ -92,6 +92,7 @@ export function Nav() {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case "ArrowDown":
+        case "j":
           event.preventDefault()
           if (filteredPages.length > 0) {
             setSelectedIndex((prev) =>
@@ -100,6 +101,7 @@ export function Nav() {
           }
           break
         case "ArrowUp":
+        case "k":
           event.preventDefault()
           if (filteredPages.length > 0) {
             setSelectedIndex((prev) =>
@@ -108,6 +110,7 @@ export function Nav() {
           }
           break
         case "ArrowRight":
+        case "l":
           event.preventDefault()
           // Navigate into selected child page (only if it exists)
           if (filteredPages.length > 0 && filteredPages[selectedIndex]) {
@@ -123,6 +126,7 @@ export function Nav() {
           }
           break
         case "ArrowLeft":
+        case "h":
           event.preventDefault()
           // Navigate to parent page (only if not at root)
           if (currentMyPage.name !== "/") {
@@ -164,12 +168,17 @@ export function Nav() {
       className={`
         fixed top-50px left-20px
         p2
-        space-y-2
-        bg-red-900
-        text-lg font-mono
-        text-white
+        space-y-0.5
+        font-mono
+        text-xs
+        text-white dark:text-black
         transition-all duration-200
-        ${keyboardMode ? "ring-2 ring-blue-500 ring-opacity-75 p-2" : ""}
+        bg-black dark:bg-white
+        ${
+          keyboardMode
+            ? "ring-4 ring-red-500 ring-opacity-75 p-2"
+            : "ring-4 ring-white dark:ring-black ring-opacity-50 p-2"
+        }
       `}
     >
       <Breadcrumb
